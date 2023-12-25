@@ -1,5 +1,8 @@
 package models;
 
+import exceptions.InvalidGameMoveException;
+import exceptions.InvalidGameParamException;
+import exceptions.InvalidUndoMoveException;
 import strategies.winningstrategies.WinningStrategy;
 
 import java.util.ArrayList;
@@ -50,9 +53,12 @@ public class Game {
         Cell proposedCell = playerCurrent.makeMove(board);
 
         System.out.println("Move made at row: "+proposedCell.getRow()+" col:"+proposedCell.getColumn());
-        if(!validateMove(proposedCell)){
-            System.out.println("Invalid move");
-            return;
+        try {
+            if(!validateMove(proposedCell)){
+                throw new InvalidGameMoveException("Invalid Game move");
+            }
+        } catch (InvalidGameMoveException e) {
+            throw new RuntimeException(e);
         }
         Cell cell = board.getBoard().get(proposedCell.getRow()).get(proposedCell.getColumn());
         cell.setCellState(CellState.FILLED);
@@ -68,9 +74,12 @@ public class Game {
     }
 
     public void undo(){
-        if (moves.size() ==0){
-            System.out.println("No moves can't UNDO");
-            return;
+        try {
+            if (moves.size() == 0) {
+                throw new InvalidUndoMoveException("No moves can't UNDO");
+            }
+        }catch (InvalidUndoMoveException e){
+            throw new RuntimeException(e);
         }
         Move last = moves.get(moves.size()-1);
 
@@ -239,7 +248,11 @@ public class Game {
         }
         public Game build(){
             if(!validate()){
-                throw new RuntimeException("INVALID PARAMS");
+                try {
+                    throw new InvalidGameParamException("INVALID PARAMS");
+                } catch (InvalidGameParamException e) {
+                    throw new RuntimeException(e);
+                }
             }
             return new Game(dimensions,players,winningStrategies);
         }

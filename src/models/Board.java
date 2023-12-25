@@ -38,7 +38,6 @@ public class Board {
             System.out.printf("|");
             for(Cell cell: row){
                 cell.display();
-
             }
             System.out.println();
         }
